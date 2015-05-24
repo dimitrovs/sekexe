@@ -16,13 +16,20 @@ do
 mkdir /sys/fs/cgroup/$SUBSYS
 mount -t cgroup -o $SUBSYS none /sys/fs/cgroup/$SUBSYS
 done
+# get list of cgroup controllers
+for c in `tail -n +2 /proc/cgroups | awk '{ print $1 }'`; do
+        mkdir /sys/fs/cgroup/$c
+        mount -n -t cgroup -o $c cgroup /sys/fs/cgroup/$c
+done
 echo 1 > /proc/sys/net/ipv4/ip_forward
 echo 0 > /proc/sys/kernel/printk
 ip addr add 127.0.0.1 dev lo
 ip link set lo up
-ip addr add 10.1.1.1/24 dev eth0
+#ip addr add 10.1.1.1/24 dev eth0
 ip link set eth0 up
-ip route add default via 10.1.1.254
+#ip route add default via 10.1.1.254
+dhclient eth0
+docker -d &
 # This is to handle when /etc/resolv.conf -> /run/resolvconf/resolv.conf
 [ -L /etc/resolv.conf ] && {
 	mkdir -p $(dirname $(readlink --canonicalize-missing /etc/resolv.conf))
@@ -36,6 +43,7 @@ ip route add default via 10.1.1.254
 }
 sh /var/log/cmd
 echo $? >/var/log/status
+
 # This will make sure that the main "tail" process had the opportunity
 # to display everything before being killed by UML misbehavior.
 sleep 1

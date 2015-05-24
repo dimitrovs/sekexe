@@ -1,3 +1,14 @@
+# This is a fork of SEKEXE
+Some changes I have made:
+
+- switched to using tun & dhcp instead of slirp
+- fixed cgroups errors
+- autorun docker daemon on startup
+
+
+NOTE: This is not production ready! I am just experimenting with it. My goal
+goal is to run Docker inside OpenVZ.
+
 # SEparate KErnel eXEcution
 
 SEKEXE uses User Mode Linux to run a Linux process within a "sub kernel",
